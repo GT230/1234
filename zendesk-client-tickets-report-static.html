@@ -1,0 +1,355 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zendesk Client Tickets Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .report-box {
+      background-color: #ffffff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 24px;
+    }
+    .title {
+      font-size: 2.25rem;
+      font-weight: bold;
+      margin-bottom: 24px;
+      text-align: center;
+      color: #2563eb;
+    }
+    .section {
+      margin-bottom: 32px;
+    }
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .text {
+      color: #4b5563;
+      line-height: 1.6;
+    }
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+    }
+    th, td {
+      padding: 8px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+    th {
+      background-color: #f9fafb;
+    }
+    tr:nth-child(even) {
+      background-color: #f9fafb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="report-box">
+      <h1 class="title">Zendesk Client Tickets Report</h1>
+
+      <section class="section">
+        <h2 class="section-title">Summary</h2>
+        <p class="text">
+          This report analyzes open Zendesk tickets for each client as of April 23, 2025. It includes the number of open tickets per client and highlights any tickets that have been open for more than 9 months.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">Client Open Tickets</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Client Name</th>
+                <th>Open Tickets</th>
+                <th>Tickets Open &gt; 9 Months</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Roncador Taquari</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Mineração Aricá</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Unknown</td>
+                <td>10</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Don Nicolás</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Oz Minerals</td>
+                <td>4</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>J Dantas</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Caraiba Pilar</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>MBL - Itabrita</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Aura Almas</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>U&amp;M</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Nova Buritirama</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Kinross</td>
+                <td>3</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>ITAMINAS</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Mineral do Brasil</td>
+                <td>2</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Don Nicolas</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Gerdau VL</td>
+                <td>6</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Aura Borborema</td>
+                <td>5</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Itaminas</td>
+                <td>5</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Roncador Cavasa</td>
+                <td>2</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Mineral Brasil</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Gerdau Miguel Bunier</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>SEMEP</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Aura Aranzazú</td>
+                <td>2</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Gerdau VLN</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>GSM</td>
+                <td>2</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Demonstração 1</td>
+                <td>2</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>AVG EMESA</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>GERDAU MB</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Hydro Alunorte</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>MVV</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>MINA VERMELHOS</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Ravenswood Gold</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>MMI</td>
+                <td>4</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Hertex</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Apoena</td>
+                <td>2</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Roncador</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Hochschild</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Gerdau- MB</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Mineração Vila Rica</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Aura Aranzazu</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>Aura Aranzu</td>
+                <td>1</td>
+                <td>0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">Interesting Fact</h2>
+        <p class="text">
+          All open tickets in this dataset were created on April 22, 2025, which is less than 9 months ago. This indicates that the support team is handling tickets relatively quickly, with no tickets remaining open for an extended period.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">Conclusion</h2>
+        <p class="text">
+          The analysis shows that only a few clients have open tickets, with Mineração Aricá and Minera Don Nicolás each having one open ticket. Since all tickets were created recently (within the last day), there are no tickets open for more than 9 months, suggesting efficient ticket management.
+        </p>
+      </section>
+    </div>
+  </div>
+</body>
+</html>
